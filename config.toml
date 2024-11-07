@@ -3,6 +3,7 @@ base_url = "https://docs.now-it.works"
 
 compile_sass = true
 build_search_index = true
+theme = "easydocs"
 
 [markdown]
 highlight_code = true

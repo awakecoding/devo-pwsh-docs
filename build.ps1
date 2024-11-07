@@ -2,7 +2,7 @@
 $OutputFolder = "./content/docs"
 $ModuleName = "Devolutions.PowerShell"
 
-Remove-Item $OutputFolder -Recurse -Force | Out-Null
+Remove-Item $OutputFolder -Recurse -ErrorAction SilentlyContinue -Force | Out-Null
 
 Import-Module $ModuleName
 
@@ -31,7 +31,7 @@ Get-Item "$OutputFolder/$ModuleName/*.md" | ForEach-Object {
 
 $content = @"
 +++
-title = "PowerShell cmdlets"
+title = "$ModuleName"
 sort_by = "title"
 template = "cmdlet.html"
 page_template = "cmdlet-page.html"
