@@ -1,0 +1,65 @@
+name: build-docs
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Clone project
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          set-safe-directory: '*'
+
+      - name: Install Zola
+        uses: taiki-e/install-action@v2
+        with:
+          tool: zola@0.19
+
+      - name: Install PowerShell modules
+        shell: pwsh
+        run: |
+          Install-PSResource -Name Microsoft.PowerShell.PlatyPS -Prerelease -TrustRepository
+          Install-Module -Name Devolutions.PowerShell -Force
+
+      - name: Generate PowerShell module docs
+        shell: pwsh
+        run: |
+          .\build.ps1
+
+      - name: Build website
+        run: zola build
+
+      - name: Archive website
+        run: tar -czvf website.tar.gz -C public .
+
+      - name: Upload website
+        uses: actions/upload-artifact@v4
+        with:
+          name: website
+          path: website.tar.gz
+          
+      - name: Publish website
+        shell: pwsh
+        working-directory: public
+        env:
+          PAGES_BRANCH: gh-pages
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $IsMasterBranch = ('${{ github.ref_name }}' -eq 'master')
+          $RemoteRepo="https://${Env:GITHUB_ACTOR}:${Env:GITHUB_TOKEN}@github.com/${Env:GITHUB_REPOSITORY}.git"
+          $RemoteBranch=$Env:PAGES_BRANCH
+          git init
+          git config user.name "GitHub Actions"
+          git config user.email "github-actions-bot@users.noreply.github.com"
+          git add .
+          git commit -m "Deploy ${Env:GITHUB_REPOSITORY} to ${Env:GITHUB_REPOSITORY}:${RemoteBranch}"
+          if ($IsMasterBranch) {
+            git push --force "${RemoteRepo}" "master`:${RemoteBranch}"
+          }
