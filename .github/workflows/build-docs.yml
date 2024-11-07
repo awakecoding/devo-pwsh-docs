@@ -55,6 +55,7 @@ jobs:
           $IsMasterBranch = ('${{ github.ref_name }}' -eq 'master')
           $RemoteRepo="https://${Env:GITHUB_ACTOR}:${Env:GITHUB_TOKEN}@github.com/${Env:GITHUB_REPOSITORY}.git"
           $RemoteBranch=$Env:PAGES_BRANCH
+          Set-Content -Path .\CNAME -Value "docs.now-it.works"
           git init
           git config user.name "GitHub Actions"
           git config user.email "github-actions-bot@users.noreply.github.com"
