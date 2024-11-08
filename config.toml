@@ -1,5 +1,5 @@
 
-base_url = "https://docs.now-it.works"
+base_url = "/"
 
 compile_sass = true
 build_search_index = true
