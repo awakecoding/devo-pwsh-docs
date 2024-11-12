@@ -1,5 +1,6 @@
 
 $ModuleName = "Devolutions.PowerShell"
+$MinimumVersion = "2024.3.3"
 
 $VersionList = Find-Module -Name $ModuleName -AllVersions |
     Select-Object -ExpandProperty Version |
@@ -23,7 +24,7 @@ function Build-ZolaVersionedDocs {
         Write-Host "Generating content for $ModuleName version $Version"
         pwsh .\build.ps1 -Version $Version -OutputPath "./content/cmdlet"
 
-        $VersionOutputPath = "$StaticOutputPath/$ModuleName/$Version"
+        $VersionOutputPath = "./top-level/static/$ModuleName/$Version"
         Remove-Item -Path $VersionOutputPath -Recurse -ErrorAction SilentlyContinue -Force | Out-Null
 
         Write-Host "Generating Zola site for $ModuleName version $Version"
@@ -47,6 +48,10 @@ function Build-ZolaTopLevelSite {
     )
 
     Copy-Item -Path "$ConfigFilePath.bak" -Destination $ConfigFilePath -Force | Out-Null
+
+    if (-Not (Test-Path ".\top-level\themes\easydocs")) {
+        Copy-Item -Path ".\themes\easydocs" -Destination ".\top-level\themes\easydocs" -Recurse -Force | Out-Null
+    }
 
     $versionArray = ($VersionList | ForEach-Object { '    "' + $_ + '"' }) -join ",`n"
 

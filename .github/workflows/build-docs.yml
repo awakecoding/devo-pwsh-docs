@@ -44,7 +44,7 @@ jobs:
           
       - name: Publish website
         shell: pwsh
-        working-directory: public
+        working-directory: www
         env:
           PAGES_BRANCH: gh-pages
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
