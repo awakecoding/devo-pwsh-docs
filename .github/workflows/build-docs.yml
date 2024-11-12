@@ -31,13 +31,10 @@ jobs:
       - name: Generate PowerShell module docs
         shell: pwsh
         run: |
-          .\build.ps1
-
-      - name: Build website
-        run: zola build
+          .\generate.ps1
 
       - name: Archive website
-        run: tar -czvf website.tar.gz -C public .
+        run: tar -czvf website.tar.gz -C www .
 
       - name: Upload website
         uses: actions/upload-artifact@v4

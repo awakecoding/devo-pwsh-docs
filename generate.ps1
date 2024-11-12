@@ -1,7 +1,10 @@
 
 $ModuleName = "Devolutions.PowerShell"
 
-$VersionList = @("2024.3.5", "2024.3.4", "2024.3.3")
+$VersionList = Find-Module -Name $ModuleName -AllVersions |
+    Select-Object -ExpandProperty Version |
+    Where-Object { [version] $_ -ge [version] $MinimumVersion }
+
 $LatestVersion = $VersionList[0]
 
 function Build-ZolaVersionedDocs {
@@ -68,5 +71,5 @@ $versionArray
     Set-Location ".."
 }
 
-#Build-ZolaVersionedDocs -VersionList $VersionList -ModuleName $ModuleName
+Build-ZolaVersionedDocs -VersionList $VersionList -ModuleName $ModuleName
 Build-ZolaTopLevelSite -LatestVersion $LatestVersion -VersionList $VersionList -ModuleName $ModuleName

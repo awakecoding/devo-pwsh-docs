@@ -17,23 +17,23 @@ if (-Not $Module) {
     Install-Module -Name $ModuleName -RequiredVersion $Version -Scope CurrentUser -Force
 }
 
+$ModuleInfo = Find-Module -Name $ModuleName -RequiredVersion $Version
+$PublishedDate = $ModuleInfo.PublishedDate
+
 Import-Module $ModuleName -RequiredVersion $Version -Force
 
 Remove-Item $OutputPath -Recurse -ErrorAction SilentlyContinue -Force | Out-Null
 
 Get-Command -Module $ModuleName -CommandType Cmdlet | ForEach-Object {
 	$CommandHelp = New-CommandHelp $_
-    #$CommandHelp.Metadata['date'] = (Get-Date $CommandHelp.Metadata['ms.date'] -Format 'yyyy-MM-dd').ToString()
-    $CommandHelp.Metadata['date'] = (Get-Date -Format 'yyyy-MM-dd').ToString()
+    $CommandHelp.Metadata['date'] = $PublishedDate.ToString("yyyy-MM-dd")
     $CommandHelp.RelatedLinks | ForEach-Object { $_.Uri = "/docs/$($_.LinkText)" }
-    #$CommandHelp.RelatedLinks | ForEach-Object { $_.Uri = "@/docs/$($_.LinkText).md" }
-    #$CommandHelp.RelatedLinks += [PSCustomObject]@{ Uri = $ModuleName; LinkText = $ModuleName }
     $CommandHelp.Inputs | Where-Object { $_.Description.Contains("{{ Fill") } | ForEach-Object { $_.Description = "" }
     $CommandHelp.Outputs | Where-Object { $_.Description.Contains("{{ Fill") } | ForEach-Object { $_.Description = "" }
     if ($CommandHelp.Synopsis -and $CommandHelp.Synopsis.Contains('Fill ')) {
         $CommandHelp.Synopsis = ""
     }
-	Export-MarkdownCommandHelp -CommandHelp $CommandHelp -OutputFolder $OutputPath -Force
+	Export-MarkdownCommandHelp -CommandHelp $CommandHelp -OutputFolder $OutputPath -Force | Out-Null
 }
 
 Get-Item "$OutputPath/$ModuleName/*.md" | ForEach-Object {
