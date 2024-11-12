@@ -1,6 +1,6 @@
-content/
 public/
 www/
+content/cmdlet/
 top-level/static
 top-level/config.toml
 top-level/themes/easydocs
