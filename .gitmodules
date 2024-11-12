@@ -1,6 +1,0 @@
-[submodule "top-level/themes/easydocs"]
-	path = top-level/themes/easydocs
-	url = git@github.com:codeandmedia/zola_easydocs_theme.git
-[submodule "themes/easydocs"]
-	path = themes/easydocs
-	url = ./top-level/themes/easydocs
