@@ -12,3 +12,10 @@ highlight_code = true
 paths = "off"
 
 [extra]
+module = "Devolutions.PowerShell"
+latest = "2024.3.5"
+versions = [
+    "2024.3.5",
+    "2024.3.4",
+    "2024.3.3"
+]
