@@ -1,27 +1,42 @@
+param (
+    [string] $Version = "latest",
+    [string] $ModuleName = "Devolutions.PowerShell",
+    [string] $OutputPath = "./content/cmdlet"
+)
 
-$OutputFolder = "./content/docs"
-$ModuleName = "Devolutions.PowerShell"
+$LatestVersion = (Find-Module -Name $ModuleName).Version
 
-Remove-Item $OutputFolder -Recurse -ErrorAction SilentlyContinue -Force | Out-Null
+if ($Version -eq "latest") {
+    $Version = $LatestVersion
+}
 
-Import-Module $ModuleName
+$Module = Get-Module $ModuleName -ListAvailable | Where-Object { $_.Version -eq $Version }
+
+if (-Not $Module) {
+    Write-Host "Installing $ModuleName version $Version"
+    Install-Module -Name $ModuleName -RequiredVersion $Version -Scope CurrentUser -Force
+}
+
+$ModuleInfo = Find-Module -Name $ModuleName -RequiredVersion $Version
+$PublishedDate = $ModuleInfo.PublishedDate
+
+Import-Module $ModuleName -RequiredVersion $Version -Force
+
+Remove-Item $OutputPath -Recurse -ErrorAction SilentlyContinue -Force | Out-Null
 
 Get-Command -Module $ModuleName -CommandType Cmdlet | ForEach-Object {
 	$CommandHelp = New-CommandHelp $_
-    #$CommandHelp.Metadata['date'] = (Get-Date $CommandHelp.Metadata['ms.date'] -Format 'yyyy-MM-dd').ToString()
-    $CommandHelp.Metadata['date'] = (Get-Date -Format 'yyyy-MM-dd').ToString()
+    $CommandHelp.Metadata['date'] = $PublishedDate.ToString("yyyy-MM-dd")
     $CommandHelp.RelatedLinks | ForEach-Object { $_.Uri = "/docs/$($_.LinkText)" }
-    #$CommandHelp.RelatedLinks | ForEach-Object { $_.Uri = "@/docs/$($_.LinkText).md" }
-    #$CommandHelp.RelatedLinks += [PSCustomObject]@{ Uri = $ModuleName; LinkText = $ModuleName }
     $CommandHelp.Inputs | Where-Object { $_.Description.Contains("{{ Fill") } | ForEach-Object { $_.Description = "" }
     $CommandHelp.Outputs | Where-Object { $_.Description.Contains("{{ Fill") } | ForEach-Object { $_.Description = "" }
     if ($CommandHelp.Synopsis -and $CommandHelp.Synopsis.Contains('Fill ')) {
         $CommandHelp.Synopsis = ""
     }
-	Export-MarkdownCommandHelp -CommandHelp $CommandHelp -OutputFolder $OutputFolder -Force
+	Export-MarkdownCommandHelp -CommandHelp $CommandHelp -OutputFolder $OutputPath -Force | Out-Null
 }
 
-Get-Item "$OutputFolder/$ModuleName/*.md" | ForEach-Object {
+Get-Item "$OutputPath/$ModuleName/*.md" | ForEach-Object {
     $filePath = $_.FullName
     $content = Get-Content -Path $filePath -Raw
     $content = $content -replace '\{\{Insert list of aliases\}\}', ''
@@ -37,7 +52,7 @@ template = "cmdlet.html"
 page_template = "cmdlet-page.html"
 +++
 "@
-Set-Content -Path "$OutputFolder/$ModuleName/_index.md" -Value $content -Force
+Set-Content -Path "$OutputPath/$ModuleName/_index.md" -Value $content -Force
 
-Move-Item ".\$OutputFolder\$ModuleName\*" $OutputFolder
-Remove-Item ".\$OutputFolder\$ModuleName"
+Move-Item ".\$OutputPath\$ModuleName\*" $OutputPath | Out-Null
+Remove-Item ".\$OutputPath\$ModuleName" | Out-Null

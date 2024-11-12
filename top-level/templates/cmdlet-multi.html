@@ -1,0 +1,16 @@
+{% extends "index.html" %}
+
+{% block content %}
+<h1 class="title">
+  {{ section.title }}
+</h1>
+<h2>Latest Version</h2>
+<p><a href="/{{ config.extra.module }}/{{ config.extra.latest }}/">{{ config.extra.latest }}</a></p>
+
+<h2>Available Versions</h2>
+<ul>
+    {% for version in config.extra.versions %}
+        <li><a href="/{{ config.extra.module }}/{{ version }}/">{{ version }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock content %}
