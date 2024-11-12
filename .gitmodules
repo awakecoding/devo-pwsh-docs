@@ -1,0 +1,3 @@
+[submodule "themes/easydocs"]
+	url = git@github.com:codeandmedia/zola_easydocs_theme.git
+	path = themes/easydocs

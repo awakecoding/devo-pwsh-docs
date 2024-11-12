@@ -3,3 +3,4 @@ public/
 www/
 top-level/static
 top-level/config.toml
+top-level/themes/easydocs
