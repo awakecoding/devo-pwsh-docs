@@ -1,7 +1,7 @@
 param (
     [string] $Version = "latest",
     [string] $ModuleName = "Devolutions.PowerShell",
-    [string] $OutputPath = "./content/docs"
+    [string] $OutputPath = "./content/cmdlet"
 )
 
 $LatestVersion = (Find-Module -Name $ModuleName).Version
@@ -54,5 +54,5 @@ page_template = "cmdlet-page.html"
 "@
 Set-Content -Path "$OutputPath/$ModuleName/_index.md" -Value $content -Force
 
-Move-Item ".\$OutputPath\$ModuleName\*" $OutputPath
-Remove-Item ".\$OutputPath\$ModuleName"
+Move-Item ".\$OutputPath\$ModuleName\*" $OutputPath | Out-Null
+Remove-Item ".\$OutputPath\$ModuleName" | Out-Null

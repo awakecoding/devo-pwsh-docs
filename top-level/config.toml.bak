@@ -1,0 +1,10 @@
+
+base_url = "/"
+compile_sass = false
+build_search_index = false
+theme = "easydocs"
+
+[extra]
+module = ""
+latest = ""
+versions = []
