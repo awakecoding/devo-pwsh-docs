@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+Allow: /
+Sitemap: /Devolutions.PowerShell/2024.3.5/sitemap.xml
